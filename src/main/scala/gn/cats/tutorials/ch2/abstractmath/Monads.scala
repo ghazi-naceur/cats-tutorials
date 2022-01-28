@@ -49,6 +49,11 @@ object Monads {
   trait MyMonad[M[_]] {
     def pure[A](value: A): M[A]
     def flatMap[A, B](ma: M[A])(f: A => M[B]): M[B]
+    // implementation of the map method using pure and flatMap
+    def map[A, B](ma: M[A])(f: A => B): M[B] = flatMap(ma)(a => pure(f(a)))
+
+    // Technically a Cats Monad extends a Cats Functor
+//    import cats.syntax.functor._ // map
   }
 
   // Cats Monad
@@ -80,6 +85,36 @@ object Monads {
   def getPairs[M[_], A, B](ma: M[A], mb: M[B])(implicit monad: Monad[M]): M[(A, B)] =
     monad.flatMap(ma)(a => monad.map(mb)(b => (a, b)))
 
+  // Extension methods: pure and flatMap
+  import cats.syntax.applicative._ // pure
+  val oneOption: Option[Int] = 1.pure[Option] // implicit Monad[Option] will be used => Some(1)
+  val oneList: List[Int] = 3.pure[List] // implicit Monad[List] will be used => List(1)
+  val oneFuture: Future[Int] = 3.pure[Future] // implicit Monad[Future] will be used => Future(Success(1))
+
+  import cats.syntax.flatMap._ // flatMap
+  val oneOptionTransformed: Option[Int] = oneOption.flatMap(x => (x + 1).pure[Option])
+
+  // Monads extend Functors
+  val oneOptionMapped1: Option[Int] = Monad[Option].map(Option(2))(_ + 1)
+  // or:
+  import cats.syntax.functor._ // map
+  val oneOptionMapped2: Option[Int] = oneOption.map(_ + 1)
+
+  // for-comprehensions
+  val composedOptionFor: Option[Int] = for {
+    one <- 1.pure[Option]
+    two <- 2.pure[Option]
+  } yield one + two
+
+  // todo: a shorter version of getPairs method using for-comprehensions
+  def getPairsFor[M[_]: Monad, A, B](ma: M[A], mb: M[B]): M[(A, B)] =
+    for {
+      a <- ma
+      b <- mb
+    } yield (a, b)
+// same as:   ma.flatMap(a => mb.map(b => (a, b)))
+// 'getPairsFor[M[_]: Monad...' Monad implicit should present in the scope
+
   def main(args: Array[String]): Unit = {
     println(combinations1)
     println(combinations2)
@@ -101,5 +136,9 @@ object Monads {
     println(getPairs(numbersList, charsList))
     println(getPairs(numberOption, charOption))
     getPairs(numberFuture, charFuture).foreach(println)
+
+    println(getPairsFor(numbersList, charsList))
+    println(getPairsFor(numberOption, charOption))
+    getPairsFor(numberFuture, charFuture).foreach(println)
   }
 }
