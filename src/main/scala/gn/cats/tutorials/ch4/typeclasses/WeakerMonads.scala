@@ -35,5 +35,8 @@ object WeakerMonads {
     override def map[A, B](ma: M[A])(f: A => B): M[B] = flatMap(ma)(a => pure(f(a)))
   }
 
+  // Weaker monad = Apply + flatMap method
+  // Monad doesn't have its own methods
+  // FlatMap extends Apply, which extends Functor
   def main(args: Array[String]): Unit = {}
 }
