@@ -3,6 +3,7 @@ package gn.cats.tutorials.ch1.introduction
 import java.util.concurrent.Executors
 import scala.concurrent.ExecutionContext
 
+// 2
 object Essentials extends App {
 
   // Higher order functions can receive functions as arguments or return other functions as results, like: map, flatMap,

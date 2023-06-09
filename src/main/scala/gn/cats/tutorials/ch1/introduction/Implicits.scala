@@ -1,5 +1,6 @@
 package gn.cats.tutorials.ch1.introduction
 
+// 1
 object Implicits extends App {
 
   // 1- implicit classes: 1 argument wrappers over values
@@ -55,11 +56,13 @@ object Implicits extends App {
          |{ "${value.productElementName(0)}": "${value.productElement(0)}" }
          |""".stripMargin.trim
   }
-
+//
+//  implicit val animalSerializer: JsonSerializer[Animal] = oneArgCaseClassSerializer[Animal]
   case class Animal(name: String)
 
-  println(oneArgCaseClassSerializer[Animal].toJson(Animal("Kyubi")))
-  println(oneArgCaseClassSerializer[Person].toJson(Person("Naruto")))
+//  println(oneArgCaseClassSerializer[Animal].toJson(Animal("Kyubi")))
+//  println(oneArgCaseClassSerializer[Person].toJson(Person("Naruto")))
+//  println(Animal("kyubi").toJson)
   println(listToJson(List(Animal("Ichibi"), Animal("Rokobi"), Animal("Kyubi"))))
 
   /*
